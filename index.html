@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HomeSlide</title>
+    <!-- Link to the CSS file -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+
+    <link rel="stylesheet" href="https://unpkg.com/swiper@11.0.0/swiper-bundle.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/slider.css') }}">
+
+    <!-- Link to the JavaScript file -->
+    <script
+      type="text/javascript"
+      src="{{ url_for('static', filename='js/Script.js') }}"
+      defer
+    ></script>
+
+
+  </head>
+
+  <body>
+    <nav id="sidebar">
+      <ul>
+        <li>
+          <span class="logo">Team Elite</span>
+          <button onclick="toggleSidebar()" id="toggle-btn">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="24px"
+              viewBox="0 -960 960 960"
+              width="24px"
+              fill="#e8eaed"
+            >
+              <path
+                d="M440-240 200-480l240-240 56 56-183 184 183 184-56 56Zm264 0L464-480l240-240 56 56-183 184 183 184-56 56Z"
+              />
+            </svg>
+          </button>
+        </li>
+
+        <li class="active">
+          <a href="#">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="24px"
+              viewBox="0 -960 960 960"
+              width="24px"
+              fill="#e8eaed"
+            >
+              <path
+                d="M240-200h120v-240h240v240h120v-360L480-740 240-560v360Zm-80 80v-480l320-240 320 240v480H520v-240h-80v240H160Zm320-350Z"
+              />
+            </svg>
+            <span>Home</span>
+          </a>
+        </li>
+
+        <!-- Other menu items -->
+
+        <li>
+          <a href="dashboard.html">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="24px"
+              viewBox="0 -960 960 960"
+              width="24px"
+              fill="#e8eaed"
+            >
+              <path
+                d="M520-600v-240h320v240H520ZM120-440v-400h320v400H120Zm400 320v-400h320v400H520Zm-400 0v-240h320v240H120Zm80-400h160v-240H200v240Zm400 320h160v-240H600v240Zm0-480h160v-80H600v80ZM200-200h160v-80H200v80Zm160-320Zm240-160Zm0 240ZM360-280Z"
+              />
+            </svg>
+            <span>Dashboard</span>
+          </a>
+        </li>
+
+        <li>
+          <button onclick="toggleSubMenu(this)" class="dropdown-btn">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="24px"
+              viewBox="0 -960 960 960"
+              width="24px"
+              fill="#e8eaed"
+            >
+              <path
+                d="M560-320h80v-80h80v-80h-80v-80h-80v80h-80v80h80v80ZM160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h240l80 80h320q33 0 56.5 23.5T880-640v400q0 33-23.5 56.5T800-160H160Zm0-80h640v-400H447l-80-80H160v480Zm0 0v-480 480Z"
+              />
+            </svg>
+            <span>Types</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="24px"
+              viewBox="0 -960 960 960"
+              width="24px"
+              fill="#e8eaed"
+            >
+              <path
+                d="M480-200 240-440l56-56 184 183 184-183 56 56-240 240Zm0-240L240-680l56-56 184 183 184-183 56 56-240 240Z"
+              />
+            </svg>
+          </button>
+
+          <ul class="sub-menu">
+            <div>
+              <li><a href="#">Igneous</a></li>
+              <li><a href="#">Sedimentary</a></li>
+              <li><a href="#">Metamorphic</a></li>
+            </div>
+          </ul>
+        </li>
+
+        <li>
+          <button onclick="toggleSubMenu(this)" class="dropdown-btn">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="24px"
+              viewBox="0 -960 960 960"
+              width="24px"
+              fill="#e8eaed"
+            >
+              <path
+                d="M222-200 80-342l56-56 85 85 170-170 56 57-225 226Zm0-320L80-662l56-56 85 85 170-170 56 57-225 226Zm298 240v-80h360v80H520Zm0-320v-80h360v80H520Z"
+              />
+            </svg>
+
+            <span>Color Composition</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="24px"
+              viewBox="0 -960 960 960"
+              width="24px"
+              fill="#e8eaed"
+            >
+              <!--
+              <path
+                d="M480-200 240-440l56-56 184 183 184-183 56 56-240 240Zm0-240L240-680l56-56 184 183 184-183 56 56-240 240Z"
+              />
+              -->
+            </svg>
+          </button>
+          <!--
+          <ul class="sub-menu">
+            <div>
+              <li><a href="#">Work</a></li>
+              <li><a href="#">Private</a></li>
+              <li><a href="#">Coding</a></li>
+              <li><a href="#">Gardening</a></li>
+              <li><a href="#">College</a></li>
+            </div>
+          </ul>
+ -->
+        </li>
+
+        <!--
+        <li>
+          <a href="calendar.html">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="24px"
+              viewBox="0 -960 960 960"
+              width="24px"
+              fill="#e8eaed"
+            >
+              <path
+                d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm0 0v-80 80Zm280 240q-17 0-28.5-11.5T440-440q0-17 11.5-28.5T480-480q17 0 28.5 11.5T520-440q0 17-11.5 28.5T480-400Zm-160 0q-17 0-28.5-11.5T280-440q0-17 11.5-28.5T320-480q17 0 28.5 11.5T360-440q0 17-11.5 28.5T320-400Zm320 0q-17 0-28.5-11.5T600-440q0-17 11.5-28.5T640-480q17 0 28.5 11.5T680-440q0 17-11.5 28.5T640-400ZM480-240q-17 0-28.5-11.5T440-280q0-17 11.5-28.5T480-320q17 0 28.5 11.5T520-280q0 17-11.5 28.5T480-240Zm-160 0q-17 0-28.5-11.5T280-280q0-17 11.5-28.5T320-320q17 0 28.5 11.5T360-280q0 17-11.5 28.5T320-240Zm320 0q-17 0-28.5-11.5T600-280q0-17 11.5-28.5T640-320q17 0 28.5 11.5T680-280q0 17-11.5 28.5T640-240Z"
+              />
+            </svg>
+            <span>Calendar</span>
+          </a>
+        </li>
+
+        <li>
+          <a href="profile.html">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="24px"
+              viewBox="0 -960 960 960"
+              width="24px"
+              fill="#e8eaed"
+            >
+              <path
+                d="M480-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM160-160v-112q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q66 0 130 15.5T736-378q29 15 46.5 43.5T800-272v112H160Zm80-80h480v-32q0-11-5.5-20T700-306q-54-27-109-40.5T480-360q-56 0-111 13.5T260-306q-9 5-14.5 14t-5.5 20v32Zm240-320q33 0 56.5-23.5T560-640q0-33-23.5-56.5T480-720q-33 0-56.5 23.5T400-640q0 33 23.5 56.5T480-560Zm0-80Zm0 400Z"
+              />
+            </svg>
+            <span>Profile</span>
+          </a>
+        </li> -->
+      </ul>
+    </nav>
+
+    <main>
+      <!-- Login/Signup Button -->
+      <a href="{{ url_for('signup') }}" class="login-button">Login</a>
+
+      <div class="container1">
+        <h2>Innovations in Rock Analysis:</h2>
+        <p>
+          "Elevate Your Rock Classification Process with Our Innovative Image
+          Processing Technology. Seamlessly Analyze Mineral Grains, Determine
+          Volumetric Proportions with Precision,<div class="typing-container">
+            and Classify Rocks Like Never Before—Empowering Your Geoscience Efforts."
+          </div>
+        </p>
+      </div>
+
+      <!-- <img src="{{ url_for('static', filename='assets/12.jpg') }}" alt="Quartz Sample"> -->
+
+
+      <h2>Rock Details:</h2>
+      <div class="container">
+        <div class="card">
+          <img
+              src="{{ url_for('static', filename='assets/31.jpg') }}"
+            />
+            <h1>Igneous Rock</h1>
+            <p>Igneous rocks are “fire-born,” meaning that they are formed from the cooling and solidification of molten (melted) rock. The word igneous derives from ignis, the Latin word for “fire.” Molten rock material is known as magma until it is erupted onto the surface when it then is termed lava.</p>
+        </div>
+
+        <div class="card1">
+          <img
+              src="{{ url_for('static', filename='assets/33.jpeg') }}"
+            />
+            <h1>Sedimentary Rocks</h1>
+            <p>Sedimentary rocks are formed when organic or mineral particles accumulate on the Earth's surface and are compacted and cemented together. The process of particles settling in place is called sedimentation. Common sedimentary rocks include sandstone, limestone, and shale. Start as sediments carried in rivers </p>
+        </div> 
+
+        <div class="card3">
+          <img
+              src="{{ url_for('static', filename='assets/35.jpg') }}"
+              alt="Quartz Sample"
+            />
+            <h1>Metamorphic Rocks</h1>
+            <p>Metamorphic rocks are formed when existing rocks are transformed by intense heat, pressure, and hot fluids deep within the Earth or where tectonic plates meet. The process of metamorphism doesn't melt the rocks, but instead changes them into denser, more compact rocks with new minerals and textures</p>
+        </div>
+       
+    </div>
+
+
+
+      <!-- Additional containers for your content -->
+
+      <section class="mineral-details">
+        <h2>Mineral Details</h2>
+        <div class="card-container">
+          <div class="mineral-card">
+            <img
+              src="{{ url_for('static', filename='assets/11.jpg') }}"
+              alt="Quartz Sample"
+            />
+            <h3>Quartz</h3>
+            <p>Classification: Silicate (tectosilicate)</p>
+            <p>Composition: Silicon dioxide (SiO₂).</p>
+            <p>Color: Commonly colorless</p>
+          </div>
+
+          <div class="mineral-card">
+            <img
+              src="{{ url_for('static', filename='assets/14.png') }}"
+              alt="Quartz Sample"
+            />
+            <h3>Hematite</h3>
+            <p>Iron oxide (Fe₂O₃).</p>
+            <p>Color: Light to dark green; sometimes yellowish or brownish</p>
+          </div>
+
+          <div class="mineral-card">
+            <img
+              src="{{ url_for('static', filename='assets/15.jpg') }}"
+              alt="Quartz Sample"
+            />
+            <h3>Feldspar</h3>
+            <p>Composition: KAlSi₃O₈ - NaAlSi₃O₈ - CaAl₂Si₂O₈</p>
+            <p>Volume: 30%</p>
+          </div>
+
+          <div class="mineral-card">
+            <img
+              src="{{ url_for('static', filename='assets/17.png') }}"
+              alt="Quartz Sample"
+            />
+            <h3>Calcite (CaCO₃)</h3>
+            <p>Composition: Calcium carbonate (CaCO₃).</p>
+            <p>
+              Color: Usually colorless or white, but can have shades of gray,
+              yellow, or green.
+            </p>
+          </div>
+          <div class="mineral-card">
+            <img
+              src="{{ url_for('static', filename='assets/16.png') }}"
+              alt="Quartz Sample"
+            />
+            <h3>Mica</h3>
+            <p>
+              Composition: Potassium, aluminum, and silicate, with variations
+              like biotite and muscovite.
+            </p>
+            <p>
+              Color:typically colorless to silvery,or biotite ranges from dark
+              brown to black.
+            </p>
+          </div>
+          <div class="mineral-card">
+            <img
+              src="{{ url_for('static', filename='assets/18.jpg') }}"
+              alt="Quartz Sample"
+            />
+            <h3>Others</h3>
+            <p>Composition: Various</p>
+            <p>Volume: 10%</p>
+          </div>
+          <div class="mineral-card">
+            <img
+              src="{{ url_for('static', filename='assets/19.png') }}"
+              alt="Quartz Sample"
+            />
+            <h3>Others</h3>
+            <p>Composition: Various</p>
+            <p>Volume: 10%</p>
+          </div>
+          <div class="mineral-card">
+            <img
+              src="{{ url_for('static', filename='assets/20.png') }}"
+              alt="Quartz Sample"
+            />
+            <h3>Others</h3>
+            <p>Composition: Various</p>
+            <p>Volume: 10%</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="page">
+        <h1>Upload an Image for Analysis</h1>
+        <!--  -->
+        <button class="btn5">
+          <a href="/upload">Click👈</a>
+        </button>
+      </section>
+
+      <section class="steps section container">
+        <div class="steps__bg">
+          <h2 class="section_title-center steps_title">
+            Our Virtual Tours
+          </h2>
+      
+      <section class="mineral-details1">
+        <h2>Key Features of our solutions</h2>
+
+        <div class="card-container1">
+          <div class="mineral-card1">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="34px"
+              viewBox="0 -960 960 960"
+              width="44px"
+              fill="#5f6368"
+            >
+              <path
+                d="M200-120v-640q0-33 23.5-56.5T280-840h400q33 0 56.5 23.5T760-760v640L480-240 200-120Zm80-122 200-86 200 86v-518H280v518Zm0-518h400-400Z"
+              />
+            </svg>
+            <p>Custom Reports in PDF/CSV</p>
+          </div>
+
+          <div class="mineral-card1">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="34px"
+              viewBox="0 -960 960 960"
+              width="44px"
+              fill="#5f6368"
+            >
+              <path
+                d="M240-200h480l-57-400H297l-57 400Zm240-480q17 0 28.5-11.5T520-720q0-17-11.5-28.5T480-760q-17 0-28.5 11.5T440-720q0 17 11.5 28.5T480-680Zm113 0h70q30 0 52 20t27 49l57 400q5 36-18.5 63.5T720-120H240q-37 0-60.5-27.5T161-211l57-400q5-29 27-49t52-20h70q-3-10-5-19.5t-2-20.5q0-50 35-85t85-35q50 0 85 35t35 85q0 11-2 20.5t-5 19.5ZM240-200h480-480Z"
+              />
+            </svg>
+            <p>Boundary Marking and Volume Calculation</p>
+          </div>
+
+          <div class="mineral-card1">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="34px"
+              viewBox="0 -960 960 960"
+              width="44px"
+              fill="#5f6368"
+            >
+              <path
+                d="M120-200q-33 0-56.5-23.5T40-280v-400q0-33 23.5-56.5T120-760h400q33 0 56.5 23.5T600-680v400q0 33-23.5 56.5T520-200H120Zm600-320q-17 0-28.5-11.5T680-560v-160q0-17 11.5-28.5T720-760h160q17 0 28.5 11.5T920-720v160q0 17-11.5 28.5T880-520H720Zm40-80h80v-80h-80v80ZM120-280h400v-400H120v400Zm40-80h320L375-500l-75 100-55-73-85 113Zm560 160q-17 0-28.5-11.5T680-240v-160q0-17 11.5-28.5T720-440h160q17 0 28.5 11.5T920-400v160q0 17-11.5 28.5T880-200H720Zm40-80h80v-80h-80v80Zm-640 0v-400 400Zm640-320v-80 80Zm0 320v-80 80Z"
+              />
+            </svg>
+
+            <p>Comprehensive Visual Analytics</p>
+          </div>
+
+          <div class="mineral-card1">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="34px"
+              viewBox="0 -960 960 960"
+              width="44px"
+              fill="#5f6368"
+            >
+              <path
+                d="m668-380 152-130 120 10-176 153 52 227-102-62-46-198Zm-94-292-42-98 46-110 92 217-96-9ZM294-287l126-76 126 77-33-144 111-96-146-13-58-136-58 135-146 13 111 97-33 143ZM173-120l65-281L20-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Zm247-340Z"
+              />
+            </svg>
+            <p>Comprehensive Visual Analytics</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- FAQ Question-->
+
+      <section class="section">
+        <h2>Frequently Asked Questions (FAQ)</h2>
+        <div class="faq">
+          <div class="faq-item">
+            <p class="faq-question">
+              <i class="faq-icon fas fa-chevron-right"></i>What types of rock
+              samples can be analyzed?
+            </p>
+            <div class="faq-answer">
+              This system is capable of analyzing various types of rock samples,
+              including sedimentary, igneous, and metamorphic rocks.
+            </div>
+          </div>
+          <div class="faq-item">
+            <p class="faq-question">
+              <i class="faq-icon fas fa-chevron-right"></i>How accurate is the
+              mineral classification?
+            </p>
+            <div class="faq-answer">
+              Our system utilizes advanced image processing techniques to
+              achieve high accuracy, reducing human error significantly.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <p class="faq-question">
+              <i class="faq-icon fas fa-chevron-right"></i>What types of visual
+              analytics will the tool provide?
+            </p>
+            <div class="faq-answer">
+              The tool will present data using graphs, pie charts, histograms,
+              and scatter plots to visually represent mineral composition,
+              spatial distribution, and volumetric proportions within samples.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <p class="faq-question">
+              <i class="faq-icon fas fa-chevron-right"></i>What kind of samples
+              will the tool work with?
+            </p>
+            <div class="faq-answer">
+              The tool is designed to process both images and video datasets of
+              rock samples, which will be provided as part of the analysis
+              project.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <p class="faq-question">
+              <i class="faq-icon fas fa-chevron-right"></i>What industries can
+              benefit from this tool?
+            </p>
+            <div class="faq-answer">
+              The mining, construction, and geological research industries,
+              among others, can benefit due to the tool’s efficiency,
+              scalability, and accuracy in rock classification.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <p class="faq-question">
+              <i class="faq-icon fas fa-chevron-right"></i>Can I download the
+              analysis report?
+            </p>
+            <div class="faq-answer">
+              Yes, you can download reports in PDF or CSV formats for further
+              analysis and easy sharing.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer>
+        <div class="enquiry">
+            Questions? Call 000-800-919-1694
+        </div>
+        <div class="footer">
+
+        <div class="footer-item">
+            <a href="faq">FAQ</a>
+            <a href="faq">Investor Relations</a>
+            <a href="faq">Privacy</a>
+            <a href="faq">Speed Test</a>
+        </div>
+        <div class="footer-item">
+            <a href="faq">Help Centre</a>
+            <a href="faq">Jobs</a>
+            <a href="faq">Cookie Preferences</a>
+            <a href="faq">Legal Notices</a>
+        </div>
+        <div class="footer-item">
+            <a href="faq">Account</a>
+            <a href="faq">Ways to Watch</a>
+            <a href="faq">Corporate Information</a>
+            <a href="faq">Only on GSI</a>
+        </div>
+        <div class="footer-item">
+            <a href="faq">Media Centre</a>
+            <a href="faq">Terms of Use</a>
+            <a href="faq">Contact Us</a>
+        </div>
+    </div>
+    </footer>
+
+    </main>
+
+    
+
+    <script
+      src="https://kit.fontawesome.com/aa5f332820.js"
+      crossorigin="anonymous"
+    ></script>
+
+    <script src="https://unpkg.com/typed.js@2.1.0/dist/typed.umd.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+    <!-- Initialize Swiper -->
+  </body>
+</html>
