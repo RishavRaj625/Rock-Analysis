@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mineralis AI - Specimen Analysis</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+    <!-- Leaflet.js for interactive maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Three.js for interactive 3D crystal models -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+    <nav id="sidebar">
+        <div class="logo-container">
+            <span class="logo">Mineralis AI</span>
+            <button onclick="toggleSidebar()" id="toggle-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed">
+                    <path d="M440-240 200-480l240-240 56 56-183 184 183 184-56 56Zm264 0L464-480l240-240 56 56-183 184 183 184-56 56Z"/>
+                </svg>
+            </button>
+        </div>
+
+        <ul>
+            <li>
+                <a href="/">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed">
+                        <path d="M240-200h120v-240h240v240h120v-360L480-740 240-560v360Zm-80 80v-480l320-240 320 240v480H520v-240h-80v240H160Zm320-350Z"/>
+                    </svg>
+                    <span>Home</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="/dashboard">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed">
+                        <path d="M520-600v-240h320v240H520ZM120-440v-400h320v400H120Zm400 320v-400h320v400H520Zm-400 0v-240h320v240H120Zm80-400h160v-240H200v240Zm400 320h160v-240H600v240Zm0-480h160v-80H600v80ZM200-200h160v-80H200v80Zm160-320Zm240-160Zm0 240ZM360-280Z"/>
+                    </svg>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+
+            <li>
+                <button onclick="toggleSubMenu(this)" class="dropdown-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed">
+                        <path d="M560-320h80v-80h80v-80h-80v-80h-80v80h-80v80h80v80ZM160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h240l80 80h320q33 0 56.5 23.5T880-640v400q0 33-23.5 56.5T800-160H160Zm0-80h640v-400H447l-80-80H160v480Zm0 0v-480 480Z"/>
+                    </svg>
+                    <span>Groups</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed">
+                        <path d="M480-200 240-440l56-56 184 183 184-183 56 56-240 240Zm0-240L240-680l56-56 184 183 184-183 56 56-240 240Z"/>
+                    </svg>
+                </button>
+                <ul class="sub-menu">
+                    <div>
+                        <li><a href="/dashboard?group=silicates">Silicates</a></li>
+                        <li><a href="/dashboard?group=carbonates">Carbonates & Oxides</a></li>
+                        <li><a href="/dashboard?group=sulfides">Sulfides & Sulfates</a></li>
+                    </div>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+
+    <main>
+        <!-- Header Section -->
+        <div class="analysis-header">
+            <div>
+                <h1 style="font-size: 2.5rem; margin-bottom: 0.25rem;">Specimen Classification: <span style="color:var(--accent-emerald);">{{ data['mineral'] }}</span></h1>
+                <p style="color:var(--text-secondary);">Model Inference Confidence: <b style="color:white;">{{ "%.2f"|format(data['confidence']) }}%</b></p>
+            </div>
+            <div class="mqi-badge">
+                <span>MQI (Quality Index):</span>
+                <span>{{ data['mqi'] }}/100</span>
+            </div>
+        </div>
+
+        <!-- Morphological Edge Scanning Row (Original -> Edge -> Edge Overlay) -->
+        <div class="glass-card" style="margin-bottom: 2rem;">
+            <h3 style="margin-bottom: 1rem; color:var(--accent-emerald);">Morphological Edge Profiling (Original &rarr; Edge Scan &rarr; Superimposed Overlay)</h3>
+            <p style="font-size:0.9rem; color:var(--text-secondary); margin-bottom:1.5rem;">Canny edge detection and superimposed overlay highlighting mineral boundary textures and grain contours.</p>
+            <div class="grid-3" style="margin-bottom: 0;">
+                <div>
+                    <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:0.5rem; text-align:center;">Original Specimen</p>
+                    <div class="img-comparison">
+                        <img src="{{ url_for('static', filename='uploads/' + data['filename']) }}" alt="Original Specimen">
+                    </div>
+                </div>
+                <div>
+                    <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:0.5rem; text-align:center;">Canny Edge Detection Scan</p>
+                    <div class="img-comparison">
+                        <img src="{{ url_for('static', filename='uploads/' + data['edge_file']) }}" alt="Edge Detection">
+                    </div>
+                </div>
+                <div>
+                    <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:0.5rem; text-align:center;">Edge Superimposed Overlay</p>
+                    <div class="img-comparison">
+                        <img src="{{ url_for('static', filename='uploads/' + data['edge_overlay_file']) }}" alt="Edge Overlay">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Layout Grid 1: Images & Metadata -->
+        <div class="grid-2">
+            <!-- OpenCV crack detection and original sample -->
+            <div class="glass-card">
+                <h3 style="margin-bottom: 1rem; color:var(--accent-emerald);">Specimen CV Scan Comparison</h3>
+                <div class="grid-2" style="margin-bottom:0; gap:1rem;">
+                    <div>
+                        <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:0.5rem; text-align:center;">Original Upload</p>
+                        <div class="img-comparison">
+                            <img src="{{ url_for('static', filename='uploads/' + data['filename']) }}" alt="Original Image">
+                        </div>
+                    </div>
+                    <div>
+                        <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:0.5rem; text-align:center;">OpenCV Crack Overlay</p>
+                        <div class="img-comparison">
+                            <img src="{{ url_for('static', filename='uploads/' + data['crack_file']) }}" alt="Cracks Detection">
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-top:1rem; font-size:0.9rem; text-align:center; color:var(--text-secondary);">
+                    OpenCV filter detected <b style="color:var(--accent-rose);">{{ data['crack_count'] }}</b> structural crack lines/fractures.
+                </div>
+            </div>
+
+            <!-- Properties and elemental composition tab container -->
+            <div class="glass-card tabs-container">
+                <div class="tabs-headers">
+                    <div class="tab-header active" onclick="switchPropTab(event, 'phys-tab')">Physical Properties</div>
+                    <div class="tab-header" onclick="switchPropTab(event, 'chem-tab')">Chemical Formula & Composition</div>
+                </div>
+
+                <!-- Tab 1: Physical Properties -->
+                <div id="phys-tab" class="tab-content active">
+                    <div class="prop-row"><span class="prop-label">Mineral Group</span><span class="prop-value">{{ data['group'] }}</span></div>
+                    <div class="prop-row"><span class="prop-label">Mohs Hardness</span><span class="prop-value" style="color:var(--accent-gold);">{{ data['hardness'] }}</span></div>
+                    <div class="prop-row"><span class="prop-label">Specific Gravity</span><span class="prop-value">{{ data['specific_gravity'] }}</span></div>
+                    <div class="prop-row"><span class="prop-label">Luster</span><span class="prop-value">{{ data['luster'] }}</span></div>
+                    <div class="prop-row"><span class="prop-label">Streak Color</span><span class="prop-value">{{ data['streak'] }}</span></div>
+                    <div class="prop-row"><span class="prop-label">Cleavage Type</span><span class="prop-value">{{ data['cleavage'] }}</span></div>
+                    <div class="prop-row"><span class="prop-label">Fracture Type</span><span class="prop-value">{{ data['fracture'] }}</span></div>
+                    <div class="prop-row"><span class="prop-label">Transparency</span><span class="prop-value">{{ data['transparency'] }}</span></div>
+                    <div class="prop-row"><span class="prop-label">Crystal Habit</span><span class="prop-value">{{ data['habit'] }}</span></div>
+                </div>
+
+                <!-- Tab 2: Chemical Properties -->
+                <div id="chem-tab" class="tab-content">
+                    <div class="prop-row" style="margin-bottom:1rem;">
+                        <span class="prop-label">Chemical Formula</span>
+                        <span class="prop-value" style="font-size:1.15rem; color:var(--accent-emerald); font-family:monospace; font-weight:700;">{{ data['formula'] }}</span>
+                    </div>
+                    <h4 style="margin-bottom:0.75rem; font-size:0.9rem; color:var(--text-secondary);">Estimated Chemical Elements Percentage:</h4>
+                    
+                    <!-- Dynamic rendering of progress bar elements based on predicted mineral -->
+                    {% if data['mineral'] == 'Quartz' %}
+                        <div style="margin-bottom:0.75rem;">
+                            <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:0.25rem;"><span>Oxygen (O)</span><span>53.3%</span></div>
+                            <div class="color-bar-wrapper" style="margin:0;"><div class="color-bar" style="width:53.3%; background:var(--accent-emerald)"></div></div>
+                        </div>
+                        <div style="margin-bottom:0.75rem;">
+                            <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:0.25rem;"><span>Silicon (Si)</span><span>46.7%</span></div>
+                            <div class="color-bar-wrapper" style="margin:0;"><div class="color-bar" style="width:46.7%; background:var(--accent-blue)"></div></div>
+                        </div>
+                    {% elif data['mineral'] == 'Calcite' %}
+                        <div style="margin-bottom:0.75rem;">
+                            <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:0.25rem;"><span>Oxygen (O)</span><span>48.0%</span></div>
+                            <div class="color-bar-wrapper" style="margin:0;"><div class="color-bar" style="width:48%; background:var(--accent-emerald)"></div></div>
+                        </div>
+                        <div style="margin-bottom:0.75rem;">
+                            <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:0.25rem;"><span>Calcium (Ca)</span><span>40.0%</span></div>
+                            <div class="color-bar-wrapper" style="margin:0;"><div class="color-bar" style="width:40%; background:var(--accent-blue)"></div></div>
+                        </div>
+                        <div style="margin-bottom:0.75rem;">
+                            <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:0.25rem;"><span>Carbon (C)</span><span>12.0%</span></div>
+                            <div class="color-bar-wrapper" style="margin:0;"><div class="color-bar" style="width:12%; background:var(--accent-gold)"></div></div>
+                        </div>
+                    {% elif data['mineral'] == 'Hematite' %}
+                        <div style="margin-bottom:0.75rem;">
+                            <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:0.25rem;"><span>Iron (Fe)</span><span>69.9%</span></div>
+                            <div class="color-bar-wrapper" style="margin:0;"><div class="color-bar" style="width:69.9%; background:var(--accent-rose)"></div></div>
+                        </div>
+                        <div style="margin-bottom:0.75rem;">
+                            <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:0.25rem;"><span>Oxygen (O)</span><span>30.1%</span></div>
+                            <div class="color-bar-wrapper" style="margin:0;"><div class="color-bar" style="width:30.1%; background:var(--accent-emerald)"></div></div>
+                        </div>
+                    {% elif data['mineral'] == 'Pyrite' %}
+                        <div style="margin-bottom:0.75rem;">
+                            <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:0.25rem;"><span>Sulfur (S)</span><span>53.4%</span></div>
+                            <div class="color-bar-wrapper" style="margin:0;"><div class="color-bar" style="width:53.4%; background:var(--accent-gold)"></div></div>
+                        </div>
+                        <div style="margin-bottom:0.75rem;">
+                            <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:0.25rem;"><span>Iron (Fe)</span><span>46.6%</span></div>
+                            <div class="color-bar-wrapper" style="margin:0;"><div class="color-bar" style="width:46.6%; background:var(--accent-rose)"></div></div>
+                        </div>
+                    {% else %}
+                        <div style="margin-bottom:0.75rem;">
+                            <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:0.25rem;"><span>Oxygen (O)</span><span>50.0%</span></div>
+                            <div class="color-bar-wrapper" style="margin:0;"><div class="color-bar" style="width:50%; background:var(--accent-emerald)"></div></div>
+                        </div>
+                        <div style="margin-bottom:0.75rem;">
+                            <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:0.25rem;"><span>Silicon (Si)</span><span>30.0%</span></div>
+                            <div class="color-bar-wrapper" style="margin:0;"><div class="color-bar" style="width:30%; background:var(--accent-blue)"></div></div>
+                        </div>
+                        <div style="margin-bottom:0.75rem;">
+                            <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:0.25rem;"><span>Magnesium / Potassium / Aluminum</span><span>20.0%</span></div>
+                            <div class="color-bar-wrapper" style="margin:0;"><div class="color-bar" style="width:20%; background:var(--accent-gold)"></div></div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Layout Grid 2: CV Metrics & Dominant Colors -->
+        <div class="grid-2">
+            <!-- Texture and CV stats -->
+            <div class="glass-card">
+                <h3 style="margin-bottom: 1.25rem; color:var(--accent-emerald);">OpenCV Texture & Surface Profiling</h3>
+                <div class="prop-row"><span class="prop-label">Estimated Grain Size</span><span class="prop-value">{{ data['grain_size'] }} (~{{ data['grain_mm'] }} mm)</span></div>
+                <div class="prop-row"><span class="prop-label">Surface Roughness Index</span><span class="prop-value">{{ data['roughness'] }}/100</span></div>
+                <div class="prop-row"><span class="prop-label">Texture Morphology</span><span class="prop-value">{{ data['texture_type'] }}</span></div>
+                
+                <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem; font-size: 0.95rem; color:var(--text-secondary);">Image Quality Assessment metrics:</h4>
+                <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:0.5rem; text-align:center;">
+                    <div style="background:rgba(255,255,255,0.02); padding:0.5rem; border-radius:8px; border:1px solid var(--border-color);">
+                        <div style="font-weight:700;">{{ data['quality_brightness'] }}%</div>
+                        <div style="font-size:0.75rem; color:var(--text-muted);">Brightness</div>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.02); padding:0.5rem; border-radius:8px; border:1px solid var(--border-color);">
+                        <div style="font-weight:700;">{{ data['quality_contrast'] }}%</div>
+                        <div style="font-size:0.75rem; color:var(--text-muted);">Contrast</div>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.02); padding:0.5rem; border-radius:8px; border:1px solid var(--border-color);">
+                        <div style="font-weight:700;">{{ data['quality_sharpness'] }}%</div>
+                        <div style="font-size:0.75rem; color:var(--text-muted);">Sharpness</div>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.02); padding:0.5rem; border-radius:8px; border:1px solid var(--border-color);">
+                        <div style="font-weight:700; color:var(--accent-rose)">{{ data['quality_noise'] }}%</div>
+                        <div style="font-size:0.75rem; color:var(--text-muted);">Noise Index</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Color Distribution -->
+            <div class="glass-card">
+                <h3 style="margin-bottom: 1rem; color:var(--accent-emerald);">Color Distribution Analysis (K-Means)</h3>
+                <div class="color-pills">
+                    {% for c in data['colors'] %}
+                        <div class="color-pill" style="gap: 0.5rem; justify-content: flex-start;">
+                            <div style="display: flex; align-items: center; gap: 0.75rem; min-width: 220px; flex-shrink: 0;">
+                                <div style="width: 20px; height: 20px; border-radius:4px; background-color: {{ c['hex'] }}; border: 1px solid var(--border-color); flex-shrink: 0;"></div>
+                                <div style="display: flex; flex-direction: column; text-align: left; line-height: 1.2;">
+                                    <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">{{ c.get('name', 'Unknown') }}</span>
+                                    <span style="font-size: 0.7rem; color: var(--text-secondary); font-family: monospace;">RGB: {{ c.get('rgb', 'N/A') }}</span>
+                                </div>
+                            </div>
+                            <div class="color-bar-wrapper" style="margin: 0 0.5rem; flex-grow: 1;"><div class="color-bar" style="width: {{ c['percentage'] }}%; background-color: {{ c['hex'] }}"></div></div>
+                            <span class="color-hex" style="font-family: monospace; font-size: 0.85rem; color: var(--text-secondary); min-width: 65px; text-align: right; flex-shrink: 0;">{{ c['hex'] }}</span>
+                            <span class="color-pct" style="min-width: 50px; text-align: right; flex-shrink: 0;">{{ c['percentage'] }}%</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Layout Grid 2.5: Color Histogram and Pie Chart Visualizations -->
+        <div class="grid-2">
+            <!-- RGB Channel Distribution (Histogram) -->
+            <div class="glass-card">
+                <h3 style="margin-bottom: 0.5rem; color:var(--accent-emerald);">RGB Channel Distribution Histogram</h3>
+                <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:1rem;">Visualizes intensity curves across Red, Green, and Blue channels (0-255).</p>
+                <div class="img-comparison" style="aspect-ratio: 3/2; max-height: 320px;">
+                    <img src="{{ url_for('static', filename='uploads/' + data['hist_file']) }}" alt="RGB Color Histogram" style="object-fit: contain; background: #020d12;">
+                </div>
+            </div>
+            
+            <!-- Dominant Colors Pie Chart -->
+            <div class="glass-card">
+                <h3 style="margin-bottom: 0.5rem; color:var(--accent-emerald);">Dominant Color Pie Chart (K-Means)</h3>
+                <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:1rem;">Donut chart showing major color distribution percentages extracted via K-Means.</p>
+                <div class="img-comparison" style="aspect-ratio: 3/2; max-height: 320px;">
+                    <img src="{{ url_for('static', filename='uploads/' + data['pie_file']) }}" alt="Color Pie Chart" style="object-fit: contain; background: #020d12;">
+                </div>
+            </div>
+        </div>
+
+        <!-- Layout Grid 3: Explainable AI (Grad-CAM & SHAP Saliency Map) -->
+        <div class="glass-card" style="margin-bottom: 2rem;">
+            <h2 style="margin-bottom: 1.5rem; text-align: center; color:var(--accent-emerald);">Explainable AI (XAI) Dashboard</h2>
+            <div class="grid-2">
+                <div>
+                    <h3 style="margin-bottom: 0.5rem; font-size: 1.1rem; text-align: center; color:var(--accent-blue);">Grad-CAM Class Activation Map</h3>
+                    <p style="font-size:0.85rem; color:var(--text-secondary); text-align:center; margin-bottom:1rem;">Highlights features at the last conv2d layer that dictated the prediction class.</p>
+                    <div class="img-comparison" style="max-height: 380px;">
+                        {% if data['gradcam_file'] %}
+                            <img src="{{ url_for('static', filename='uploads/' + data['gradcam_file']) }}" alt="Grad-CAM activation overlay">
+                        {% else %}
+                            <div style="color:var(--text-muted)">Activate model training to generate XAI activation map</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div>
+                    <h3 style="margin-bottom: 0.5rem; font-size: 1.1rem; text-align: center; color:var(--accent-gold);">SHAP Pixel Attribution Map</h3>
+                    <p style="font-size:0.85rem; color:var(--text-secondary); text-align:center; margin-bottom:1rem;">Highlights pixel gradients showing contribution peaks to model output.</p>
+                    <div class="img-comparison" style="max-height: 380px;">
+                        {% if data['shap_file'] %}
+                            <img src="{{ url_for('static', filename='uploads/' + data['shap_file']) }}" alt="SHAP attribution overlay">
+                        {% else %}
+                            <div style="color:var(--text-muted)">Activate model training to generate SHAP overlay</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Layout Grid 4: 3D Crystal Viewer & Geological Deposit Map -->
+        <div class="grid-2" style="margin-bottom: 2rem;">
+            <!-- 3D Viewer -->
+            <div class="glass-card">
+                <h3 style="margin-bottom: 0.25rem; color:var(--accent-emerald);">Interactive 3D Crystal Viewer</h3>
+                <p style="color:var(--text-secondary); font-size:0.85rem; margin-bottom:1rem;">Rotating 3D rendering representing the mineral's crystal structure symmetry.</p>
+                <div class="canvas-container" id="threejs-container">
+                    <!-- ThreeJS Canvas -->
+                </div>
+            </div>
+
+            <!-- Leaflet Map -->
+            <div class="glass-card">
+                <h3 style="margin-bottom: 0.25rem; color:var(--accent-emerald);">Global Geological Deposit Map</h3>
+                <p style="color:var(--text-secondary); font-size:0.85rem; margin-bottom:1rem;">Significant mineral reserves and deposits located globally.</p>
+                <div class="map-container" id="leaflet-map">
+                    <!-- Leaflet Map -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Geological Timeline Section -->
+        <section class="glass-card" style="margin-bottom: 2rem;">
+            <h3 style="margin-bottom: 1.5rem; color:var(--accent-emerald); text-align:center;">Geological Formation Timeline</h3>
+            <div style="display:flex; justify-content:space-between; align-items:center; position:relative; padding:1.5rem 0; flex-wrap:wrap; gap:1rem;">
+                <div style="position:absolute; height:4px; background:rgba(255,255,255,0.08); width:100%; top:50%; left:0; z-index:1;"></div>
+                
+                <div style="z-index:2; text-align:center; flex:1;">
+                    <div style="width:24px; height:24px; border-radius:50%; background:{{ 'var(--accent-emerald)' if 'Archean' in data['timeline'] else '#334155' }}; margin: 0 auto 0.5rem; border:4px solid var(--bg-base);"></div>
+                    <span style="font-weight:700; font-size:0.9rem;">Archean</span>
+                    <div style="font-size:0.75rem; color:var(--text-muted);">(> 2.5 Ga)</div>
+                </div>
+
+                <div style="z-index:2; text-align:center; flex:1;">
+                    <div style="width:24px; height:24px; border-radius:50%; background:{{ 'var(--accent-emerald)' if 'Proterozoic' in data['timeline'] else '#334155' }}; margin: 0 auto 0.5rem; border:4px solid var(--bg-base);"></div>
+                    <span style="font-weight:700; font-size:0.9rem;">Proterozoic</span>
+                    <div style="font-size:0.75rem; color:var(--text-muted);">(2.5 Ga - 541 Ma)</div>
+                </div>
+
+                <div style="z-index:2; text-align:center; flex:1;">
+                    <div style="width:24px; height:24px; border-radius:50%; background:{{ 'var(--accent-emerald)' if 'Paleozoic' in data['timeline'] else '#334155' }}; margin: 0 auto 0.5rem; border:4px solid var(--bg-base);"></div>
+                    <span style="font-weight:700; font-size:0.9rem;">Paleozoic</span>
+                    <div style="font-size:0.75rem; color:var(--text-muted);">(541 - 252 Ma)</div>
+                </div>
+
+                <div style="z-index:2; text-align:center; flex:1;">
+                    <div style="width:24px; height:24px; border-radius:50%; background:{{ 'var(--accent-emerald)' if 'Permian' in data['timeline'] or 'Mesozoic' in data['timeline'] else '#334155' }}; margin: 0 auto 0.5rem; border:4px solid var(--bg-base);"></div>
+                    <span style="font-weight:700; font-size:0.9rem;">Mesozoic</span>
+                    <div style="font-size:0.75rem; color:var(--text-muted);">(252 - 66 Ma)</div>
+                </div>
+
+                <div style="z-index:2; text-align:center; flex:1;">
+                    <div style="width:24px; height:24px; border-radius:50%; background:{{ 'var(--accent-emerald)' if 'Cenozoic' in data['timeline'] else '#334155' }}; margin: 0 auto 0.5rem; border:4px solid var(--bg-base);"></div>
+                    <span style="font-weight:700; font-size:0.9rem;">Cenozoic</span>
+                    <div style="font-size:0.75rem; color:var(--text-muted);">(< 66 Ma)</div>
+                </div>
+            </div>
+            <p style="text-align:center; font-size:0.95rem; color:var(--text-secondary); margin-top:1.5rem; font-style:italic;">
+                Target Occurrence Period: <b>{{ data['timeline'] }}</b>
+            </p>
+        </section>
+
+        <!-- PDF Downloader -->
+        <div style="text-align: center; margin: 3rem 0;">
+            <a class="btn-primary" href="/report/{{ data['filename'] }}" style="font-size: 1.15rem; padding: 1rem 2.5rem; box-shadow:0 4px 20px rgba(16, 185, 129, 0.4);">
+                <span>📥</span> Download PDF Research Report
+            </a>
+        </div>
+
+        <!-- Floating Chatbot Assistant Widget -->
+        <div class="chat-widget">
+            <div class="chat-bubble" onclick="toggleChatWindow()">
+                <svg xmlns="http://www.w3.org/2000/svg" height="28px" viewBox="0 -960 960 960" width="28px" fill="white">
+                    <path d="M240-400h320v-80H240v80Zm0-120h480v-80H240v80Zm0-120h480v-80H240v80ZM80-80v-720q0-33 23.5-56.5T160-880h640q33 0 56.5 23.5T880-800v480q0 33-23.5 56.5T800-240H240L80-80Zm80-160h640v-560H160v560Zm0 0v-560 560Z"/>
+                </svg>
+            </div>
+            <div class="chat-window" id="chat-box">
+                <div class="chat-header">
+                    <span class="chat-title">AI Geological Assistant</span>
+                    <button onclick="toggleChatWindow()" style="background:none; border:none; color:var(--text-secondary); cursor:pointer; font-size:1.15rem; font-weight:700;">×</button>
+                </div>
+                <div class="chat-messages" id="chat-messages">
+                    <div class="message bot">
+                        Hello! I am your AI Geological Assistant. Ask me anything about the specimen <b>{{ data['mineral'] }}</b>, its chemistry, Mohs hardness, or applications!
+                    </div>
+                </div>
+                <div class="chat-input-container">
+                    <input type="text" class="chat-input" id="chat-input" placeholder="Ask a question..." onkeydown="if(event.key==='Enter') sendChatMessage()">
+                    <button class="chat-send" onclick="sendChatMessage()">Send</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <div class="footer-links">
+                <a href="/">Home</a>
+                <a href="/dashboard">Analytics Dashboard</a>
+                <a href="#">Academic Reference</a>
+            </div>
+            <div class="footer-text">
+                © 2026 Mineralis AI. Dynamic Specimen Profiling.
+            </div>
+        </footer>
+    </main>
+
+    <!-- Scripts for Leaflet Map, Three.js, Chat, and Tabs -->
+    <script>
+        // Tab switching
+        function switchPropTab(evt, tabId) {
+            document.querySelectorAll('#phys-tab, #chem-tab').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-header').forEach(header => {
+                header.classList.remove('active');
+            });
+            document.getElementById(tabId).classList.add('active');
+            evt.currentTarget.classList.add('active');
+        }
+
+        // Sidebar Toggling
+        const sidebar = document.getElementById('sidebar');
+        function toggleSidebar() {
+            sidebar.classList.toggle('close');
+        }
+        function toggleSubMenu(button) {
+            button.nextElementSibling.classList.toggle('show');
+        }
+
+        // Chatbot functionality
+        function toggleChatWindow() {
+            document.getElementById('chat-box').classList.toggle('open');
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const msg = input.value.trim();
+            if (!msg) return;
+            
+            input.value = '';
+            
+            // Append User message
+            const msgsContainer = document.getElementById('chat-messages');
+            msgsContainer.innerHTML += `<div class="message user">${msg}</div>`;
+            msgsContainer.scrollTop = msgsContainer.scrollHeight;
+            
+            // Post to backend API
+            fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: msg })
+            })
+            .then(res => res.json())
+            .then(data => {
+                msgsContainer.innerHTML += `<div class="message bot">${data.response}</div>`;
+                msgsContainer.scrollTop = msgsContainer.scrollHeight;
+            })
+            .catch(() => {
+                msgsContainer.innerHTML += `<div class="message bot">Apologies, I encountered a communication error with the geological database. Please try again.</div>`;
+                msgsContainer.scrollTop = msgsContainer.scrollHeight;
+            });
+        }
+
+        // Initialize Leaflet Map with deposits data
+        const deposits = {{ data['deposits']|tojson }};
+        const map = L.map('leaflet-map').setView([20.0, 0.0], 1);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        deposits.forEach(dep => {
+            L.marker([dep.lat, dep.lon])
+                .addTo(map)
+                .bindPopup(`<b>${dep.loc}</b><br/>Major deposit of {{ data['mineral'] }}`)
+                .openPopup();
+        });
+
+        // Initialize Three.js 3D crystal system viewer
+        const container = document.getElementById('threejs-container');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
+        camera.position.z = 8;
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        container.appendChild(renderer.domElement);
+
+        // Add lighting
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+        scene.add(ambientLight);
+        const pointLight = new THREE.PointLight(0xffffff, 0.8);
+        pointLight.position.set(5, 5, 5);
+        scene.add(pointLight);
+
+        // Choose geometry based on crystal system of classified mineral
+        const crystalSystem = "{{ data['crystal_system'] }}";
+        const mineralName = "{{ data['mineral'] }}";
+        let geometry;
+        let materialColor = 0x10b981; // default emerald green
+
+        if (mineralName === 'Quartz') {
+            // Hexagonal prism (Trigonal)
+            geometry = new THREE.CylinderGeometry(1.2, 1.2, 3, 6);
+            materialColor = 0x67e8f9; // light cyan
+        } else if (mineralName === 'Pyrite') {
+            // Cubic
+            geometry = new THREE.BoxGeometry(2, 2, 2);
+            materialColor = 0xf59e0b; // golden pyrite color
+        } else if (mineralName === 'Calcite') {
+            // Rhombohedral (sheared box)
+            geometry = new THREE.BoxGeometry(2, 2, 2);
+            // Apply slight shear translation to mimic rhombohedron
+            const pos = geometry.attributes.position;
+            for (let i = 0; i < pos.count; i++) {
+                let y = pos.getY(i);
+                pos.setX(i, pos.getX(i) + y * 0.4); // Shear X along Y
+            }
+            materialColor = 0xe2e8f0; // calcite white
+        } else if (mineralName === 'Hematite') {
+            // Trigonal / Botryoidal cluster (multiple spheres group)
+            geometry = new THREE.SphereGeometry(1.4, 32, 32);
+            materialColor = 0xef4444; // reddish iron oxide
+        } else if (mineralName === 'Mica') {
+            // Tabular thin plates
+            geometry = new THREE.BoxGeometry(2.8, 0.2, 2.0);
+            materialColor = 0xd1d5db; // pearly silver muscovite
+        } else if (mineralName === 'Gypsum') {
+            // Monoclinic prismatic bladed crystals
+            geometry = new THREE.ConeGeometry(1.0, 3.2, 4);
+            materialColor = 0xa5f3fc; // soft desert rose translucent
+        } else {
+            // Monoclinic block (Feldspar/Talc)
+            geometry = new THREE.BoxGeometry(2.2, 1.8, 1.4);
+            materialColor = 0xfbcfe8; // pinkish microcline/orthoclase
+        }
+
+        const material = new THREE.MeshPhongMaterial({
+            color: materialColor,
+            shininess: 90,
+            specular: 0xffffff,
+            transparent: true,
+            opacity: 0.8,
+            side: THREE.DoubleSide
+        });
+
+        // Add wireframe helper for extra academic wireframe glowing styling
+        const crystalMesh = new THREE.Mesh(geometry, material);
+        scene.add(crystalMesh);
+
+        const wireframeGeom = new THREE.EdgesGeometry(geometry);
+        const wireframeMat = new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 2 });
+        const wireframe = new THREE.LineSegments(wireframeGeom, wireframeMat);
+        crystalMesh.add(wireframe);
+
+        // Spin animation
+        function animate() {
+            requestAnimationFrame(animate);
+            crystalMesh.rotation.x += 0.007;
+            crystalMesh.rotation.y += 0.01;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Responsive resize
+        window.addEventListener('resize', () => {
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        });
+    </script>
+    <script src="{{ url_for('static', filename='js/plexus.js') }}"></script>
+</body>
+</html>

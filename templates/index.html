@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mineralis AI - Mineral Analysis Platform</title>
+    <!-- Link to the CSS file -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+    <link rel="stylesheet" href="https://unpkg.com/swiper@11.0.0/swiper-bundle.min.css">
+</head>
+<body>
+    <nav id="sidebar">
+        <div class="logo-container">
+            <span class="logo">Mineralis AI</span>
+            <button onclick="toggleSidebar()" id="toggle-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed">
+                    <path d="M440-240 200-480l240-240 56 56-183 184 183 184-56 56Zm264 0L464-480l240-240 56 56-183 184 183 184-56 56Z"/>
+                </svg>
+            </button>
+        </div>
+
+        <ul>
+            <li class="active">
+                <a href="/">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed">
+                        <path d="M240-200h120v-240h240v240h120v-360L480-740 240-560v360Zm-80 80v-480l320-240 320 240v480H520v-240h-80v240H160Zm320-350Z"/>
+                    </svg>
+                    <span>Home</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="/dashboard">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed">
+                        <path d="M520-600v-240h320v240H520ZM120-440v-400h320v400H120Zm400 320v-400h320v400H520Zm-400 0v-240h320v240H120Zm80-400h160v-240H200v240Zm400 320h160v-240H600v240Zm0-480h160v-80H600v80ZM200-200h160v-80H200v80Zm160-320Zm240-160Zm0 240ZM360-280Z"/>
+                    </svg>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+
+            <li>
+                <button onclick="toggleSubMenu(this)" class="dropdown-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed">
+                        <path d="M560-320h80v-80h80v-80h-80v-80h-80v80h-80v80h80v80ZM160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h240l80 80h320q33 0 56.5 23.5T880-640v400q0 33-23.5 56.5T800-160H160Zm0-80h640v-400H447l-80-80H160v480Zm0 0v-480 480Z"/>
+                    </svg>
+                    <span>Groups</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed">
+                        <path d="M480-200 240-440l56-56 184 183 184-183 56 56-240 240Zm0-240L240-680l56-56 184 183 184-183 56 56-240 240Z"/>
+                    </svg>
+                </button>
+                <ul class="sub-menu">
+                    <div>
+                        <li><a href="/dashboard?group=silicates">Silicates</a></li>
+                        <li><a href="/dashboard?group=carbonates">Carbonates & Oxides</a></li>
+                        <li><a href="/dashboard?group=sulfides">Sulfides & Sulfates</a></li>
+                    </div>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+
+    <main>
+        <!-- Top Bar for Layout Alignment -->
+        <div class="top-bar">
+            <div></div>
+        </div>
+
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <h1 class="grad-text">AI-Powered Mineral Analysis</h1>
+            <p>
+                "Elevate your geological research process with our deep learning and computer vision technology. 
+                Seamlessly analyze grain textures, estimate physical-chemical properties, identify crystal structures, 
+                and map minerals with explainable AI—empowering your academic and field science efforts."
+            </p>
+        </section>
+
+        <!-- Dropzone Section -->
+        <section class="glass-card" style="margin-bottom: 3.5rem;">
+            <h2 style="margin-bottom: 1.5rem; text-align: center;">Upload Mineral Specimen Image for Deep Learning Analysis</h2>
+            <form action="/upload" method="post" enctype="multipart/form-data">
+                <div class="upload-zone" onclick="document.getElementById('file-input').click()">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960" width="48px" fill="var(--accent-emerald)" style="margin-bottom: 1rem;">
+                        <path d="M480-320 280-520l56-58 104 104v-326h80v326l104-104 56 58-200 520ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z"/>
+                    </svg>
+                    <h3 style="margin-bottom: 0.5rem;">Drag & drop image here or click to browse</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-secondary);">Supports JPG, PNG, JPEG. Resized automatically to 128x128 for model inference.</p>
+                    <input type="file" name="file" id="file-input" accept="image/*" onchange="this.form.submit()" required>
+                </div>
+            </form>
+        </section>
+
+        <!-- Mineral Groups Section -->
+        <h2 style="margin-bottom: 2rem;">Main Mineral Classifications:</h2>
+        <div class="grid-3" style="margin-bottom: 3.5rem;">
+            <div class="card glass-card" style="width:100%; margin:0;">
+                <img src="{{ url_for('static', filename='assets/31.jpg') }}" alt="Silicates" style="width:100%; border-radius:10px; margin-bottom:1rem; aspect-ratio:4/3; object-fit:cover;">
+                <h3 style="margin-bottom: 0.5rem;">Silicates</h3>
+                <p style="font-size:0.9rem; color:var(--text-secondary); line-height:1.5;">Silicate minerals contain the silicon-oxygen tetrahedra ([SiO₄]⁴⁻) as their fundamental structure, comprising over 90% of Earth's crust. Examples: Quartz, Feldspar, Mica, Talc.</p>
+            </div>
+
+            <div class="card glass-card" style="width:100%; margin:0;">
+                <img src="{{ url_for('static', filename='assets/33.jpeg') }}" alt="Carbonates & Oxides" style="width:100%; border-radius:10px; margin-bottom:1rem; aspect-ratio:4/3; object-fit:cover;">
+                <h3 style="margin-bottom: 0.5rem;">Carbonates & Oxides</h3>
+                <p style="font-size:0.9rem; color:var(--text-secondary); line-height:1.5;">Carbonates feature the anionic complex [CO₃]²⁻ (e.g. Calcite), reacting to weak acids. Oxides comprise metal cations bound to oxygen (e.g. Hematite), serving as essential metallic ores.</p>
+            </div>
+
+            <div class="card glass-card" style="width:100%; margin:0;">
+                <img src="{{ url_for('static', filename='assets/35.jpg') }}" alt="Sulfides & Sulfates" style="width:100%; border-radius:10px; margin-bottom:1rem; aspect-ratio:4/3; object-fit:cover;">
+                <h3 style="margin-bottom: 0.5rem;">Sulfides & Sulfates</h3>
+                <p style="font-size:0.9rem; color:var(--text-secondary); line-height:1.5;">Sulfides are compounds of sulfur combined with metal cations (e.g. Pyrite). Sulfates contain the anionic group [SO₄]²⁻ (e.g. Gypsum), typically forming as evaporites in dry lake beds.</p>
+            </div>
+        </div>
+
+        <!-- Mineral Samples Cards -->
+        <section class="mineral-details">
+            <h2 style="margin-bottom: 2rem;">Platform Class Library (8 Core Minerals)</h2>
+            <div class="card-container">
+                <div class="mineral-card glass-card">
+                    <img src="{{ url_for('static', filename='assets/11.jpg') }}" alt="Quartz" />
+                    <h3 style="color:var(--accent-emerald);">Quartz</h3>
+                    <p><b>Group:</b> Silicate (Tectosilicate)</p>
+                    <p><b>Chemistry:</b> Silicon Dioxide (SiO₂)</p>
+                    <p><b>Mohs Hardness:</b> 7.0</p>
+                </div>
+
+                <div class="mineral-card glass-card">
+                    <img src="{{ url_for('static', filename='assets/15.jpg') }}" alt="Feldspar" />
+                    <h3 style="color:var(--accent-emerald);">Feldspar</h3>
+                    <p><b>Group:</b> Silicate (Tectosilicate)</p>
+                    <p><b>Chemistry:</b> KAlSi₃O₈</p>
+                    <p><b>Mohs Hardness:</b> 6.0</p>
+                </div>
+
+                <div class="mineral-card glass-card">
+                    <img src="{{ url_for('static', filename='assets/17.png') }}" alt="Calcite" />
+                    <h3 style="color:var(--accent-emerald);">Calcite</h3>
+                    <p><b>Group:</b> Carbonates</p>
+                    <p><b>Chemistry:</b> Calcium Carbonate (CaCO₃)</p>
+                    <p><b>Mohs Hardness:</b> 3.0</p>
+                </div>
+
+                <div class="mineral-card glass-card">
+                    <img src="{{ url_for('static', filename='assets/14.png') }}" alt="Hematite" />
+                    <h3 style="color:var(--accent-emerald);">Hematite</h3>
+                    <p><b>Group:</b> Oxide</p>
+                    <p><b>Chemistry:</b> Iron Oxide (Fe₂O₃)</p>
+                    <p><b>Mohs Hardness:</b> 5.5 - 6.5</p>
+                </div>
+
+                <div class="mineral-card glass-card">
+                    <img src="{{ url_for('static', filename='assets/16.png') }}" alt="Mica" />
+                    <h3 style="color:var(--accent-emerald);">Mica</h3>
+                    <p><b>Group:</b> Silicate (Phyllosilicate)</p>
+                    <p><b>Chemistry:</b> KAl₂(AlSi₃O₁₀)(OH)₂</p>
+                    <p><b>Mohs Hardness:</b> 2.0 - 3.0</p>
+                </div>
+
+                <div class="mineral-card glass-card">
+                    <img src="{{ url_for('static', filename='assets/18.jpg') }}" alt="Pyrite" />
+                    <h3 style="color:var(--accent-emerald);">Pyrite</h3>
+                    <p><b>Group:</b> Sulfides</p>
+                    <p><b>Chemistry:</b> Iron Sulfide (FeS₂)</p>
+                    <p><b>Mohs Hardness:</b> 6.0 - 6.5</p>
+                </div>
+
+                <div class="mineral-card glass-card">
+                    <img src="{{ url_for('static', filename='assets/19.png') }}" alt="Gypsum" />
+                    <h3 style="color:var(--accent-emerald);">Gypsum</h3>
+                    <p><b>Group:</b> Sulfate</p>
+                    <p><b>Chemistry:</b> CaSO₄·2H₂O</p>
+                    <p><b>Mohs Hardness:</b> 2.0</p>
+                </div>
+
+                <div class="mineral-card glass-card">
+                    <img src="{{ url_for('static', filename='assets/20.png') }}" alt="Talc" />
+                    <h3 style="color:var(--accent-emerald);">Talc</h3>
+                    <p><b>Group:</b> Silicate (Phyllosilicate)</p>
+                    <p><b>Chemistry:</b> Mg₃Si₄O₁₀(OH)₂</p>
+                    <p><b>Mohs Hardness:</b> 1.0</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Solution Features Section -->
+        <section class="mineral-details1" style="margin-top: 4rem;">
+            <h2 style="margin-bottom: 2rem;">Comprehensive Platform Features</h2>
+            <div class="card-container1">
+                <div class="mineral-card1 glass-card">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="36px" viewBox="0 -960 960 960" width="36px" fill="var(--accent-blue)" style="margin-bottom: 0.75rem;">
+                        <path d="M320-240h320v-80H320v80Zm0-160h320v-80H320v80ZM240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80H240Zm280-560v-160H240v640h480v-480H520ZM240-800v160-160 640-640Z"/>
+                    </svg>
+                    <h3>PDF Scientific Reports</h3>
+                    <p style="font-size:0.9rem; color:var(--text-secondary); margin-top: 5px;">Export comprehensive physical and chemical analysis, edge/fracture indices, and explainability plots into publication-ready PDF files.</p>
+                </div>
+
+                <div class="mineral-card1 glass-card">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="36px" viewBox="0 -960 960 960" width="36px" fill="var(--accent-emerald)" style="margin-bottom: 0.75rem;">
+                        <path d="M440-160q-117 0-198.5-81.5T160-440q0-117 81.5-198.5T440-720q117 0 198.5 81.5T720-440q0 49-15.5 93T661-226l119 119-56 56-119-119q-44 42-88 57.5T440-160Zm0-80q83 0 141.5-58.5T640-440q0-83-58.5-141.5T440-640q-83 0-141.5 58.5T240-440q0 83 58.5 141.5T440-240Z"/>
+                    </svg>
+                    <h3>Computer Vision Edge Profiling</h3>
+                    <p style="font-size:0.9rem; color:var(--text-secondary); margin-top: 5px;">Perform texture, grain size, surface roughness index, and crack/fracture distribution scans on mineral specimens using OpenCV filters.</p>
+                </div>
+
+                <div class="mineral-card1 glass-card">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="36px" viewBox="0 -960 960 960" width="36px" fill="var(--accent-gold)" style="margin-bottom: 0.75rem;">
+                        <path d="M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-120q66 0 113-47t47-113q0-66-47-113t-113-47q-66 0-113 47t-47 113q0 66 47 113t113 47Zm0-80q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm0-80Z"/>
+                    </svg>
+                    <h3>Explainable AI (XAI)</h3>
+                    <p style="font-size:0.9rem; color:var(--text-secondary); margin-top: 5px;">Interrogate the deep convolutional layers with Grad-CAM and pixel-level saliency (SHAP) attributions to trace model features.</p>
+                </div>
+
+                <div class="mineral-card1 glass-card">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="36px" viewBox="0 -960 960 960" width="36px" fill="#a78bfa" style="margin-bottom: 0.75rem;">
+                        <path d="M240-400h320v-80H240v80Zm0-120h480v-80H240v80Zm0-120h480v-80H240v80ZM80-80v-720q0-33 23.5-56.5T160-880h640q33 0 56.5 23.5T920-800v480q0 33-23.5 56.5T800-240H240L80-8Z"/>
+                    </svg>
+                    <h3>Geological Assistant</h3>
+                    <p style="font-size:0.9rem; color:var(--text-secondary); margin-top: 5px;">Query our integrated database through the interactive AI chatbot to gather details on mineral habits, deposits, and chemical structures.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="faq-section">
+            <h2 style="margin-bottom: 2rem;">Frequently Asked Questions (FAQ)</h2>
+            <div class="faq">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>What types of mineral samples can be analyzed?</span>
+                        <span class="faq-icon">▶</span>
+                    </div>
+                    <div class="faq-answer">
+                        The platform is engineered to identify rock-forming minerals, focusing on silicates, carbonates, oxides, sulfides, and sulfates. It supports eight core classes: Quartz, Feldspar, Calcite, Hematite, Mica, Pyrite, Gypsum, and Talc.
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>How accurate is the deep learning mineral classification model?</span>
+                        <span class="faq-icon">▶</span>
+                    </div>
+                    <div class="faq-answer">
+                        Our custom CNN classifier is trained on an augmented high-resolution mineral database, reaching a validation accuracy of over 95%. Prediction confidence scores are provided with each scan to indicate system classification certainty.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>What visual analytics does the platform provide?</span>
+                        <span class="faq-icon">▶</span>
+                    </div>
+                    <div class="faq-answer">
+                        The platform provides detailed visual overlays (OpenCV edge scans, Canny edge superimposed overlays, crack contours, K-Means color distribution, Grad-CAM heatmaps, and SHAP saliency grids), alongside 3D crystal system models, Leaflet deposit maps, and training stats charts.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Can I export the geological analysis reports?</span>
+                        <span class="faq-icon">▶</span>
+                    </div>
+                    <div class="faq-answer">
+                        Yes! Upon completing an image analysis, you can click "Download PDF Report" to download a complete document generated dynamically with ReportLab, containing all properties tables, chromatographic curves, K-means pie charts, and morphological/XAI overlays.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>How is the Mineral Quality Index (MQI) computed?</span>
+                        <span class="faq-icon">▶</span>
+                    </div>
+                    <div class="faq-answer">
+                        The Mineral Quality Index (MQI) is a composite score calculated using a weighted formula: 40% model inference confidence, 30% OpenCV assessed image quality metrics (combining brightness, contrast, and sharpness parameters), and 30% sample purity derived from the surface roughness and crack density indexes.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>What is represented by the Plexus constellation background?</span>
+                        <span class="faq-icon">▶</span>
+                    </div>
+                    <div class="faq-answer">
+                        The interactive plexus constellation network background represents the microscopic atomic crystal lattice structures and chemical bonds that characterize minerals. The occasional bright white node flares mimic crystalline light reflection and energy flares within minerals.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>What are the Explainable AI (XAI) overlays (Grad-CAM and SHAP)?</span>
+                        <span class="faq-icon">▶</span>
+                    </div>
+                    <div class="faq-answer">
+                        Grad-CAM (Gradient-weighted Class Activation Mapping) highlights features at the final convolutional layers that dictated the predicted mineral class (e.g. highlighting grain patterns). SHAP (SHapley Additive exPlanations) attribution shows pixel-level contributions, allowing researchers to trace exact neural pathways of classification.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>How does the interactive 3D crystal system viewer work?</span>
+                        <span class="faq-icon">▶</span>
+                    </div>
+                    <div class="faq-answer">
+                        Based on the predicted mineral, the platform references its mathematical crystallography system (e.g., Cubic for Pyrite, Hexagonal/Trigonal for Quartz, Monoclinic for Gypsum). It then generates a corresponding 3D crystal model in real-time using WebGL via Three.js, complete with wireframe sub-lacing for interactive structural inspections.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="/dashboard">Analytics Dashboard</a>
+                <a href="#">Academic Reference</a>
+            </div>
+            <div class="footer-text">
+                © 2026 Mineralis AI. Developed for geological research, academic presentations, and scientific demonstrations.
+            </div>
+        </footer>
+    </main>
+
+    <script src="https://unpkg.com/typed.js@2.1.0/dist/typed.umd.js"></script>
+    <script src="{{ url_for('static', filename='js/plexus.js') }}"></script>
+    <script>
+        // Sidebar Toggling
+        const sidebar = document.getElementById('sidebar');
+        function toggleSidebar() {
+            sidebar.classList.toggle('close');
+        }
+
+        function toggleSubMenu(button) {
+            button.nextElementSibling.classList.toggle('show');
+        }
+
+        // FAQ Toggle
+        document.querySelectorAll('.faq-question').forEach(item => {
+            item.addEventListener('click', () => {
+                const faqItem = item.parentElement;
+                faqItem.classList.toggle('active');
+            });
+        });
+    </script>
+</body>
+</html>
